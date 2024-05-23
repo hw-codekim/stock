@@ -7,6 +7,7 @@ today = datetime.datetime.today().strftime('%Y-%m-%d')
 st.subheader('지표 조회')
 df_guri = fdr.DataReader('HG=F') # 구리 선물 (COMEX)
 df_guri = df_guri.reset_index()
+st.write(df_guri)
 df_guri = df_guri[df_guri['Date'] > '2024-01-01']
 today_value = df_guri['Close'].iloc[-1]
 fig_guri = px.line(df_guri, x="Date", y="Close",title=f'【 구리 】 2024.01.01~ {today} / {today} = {today_value}')
