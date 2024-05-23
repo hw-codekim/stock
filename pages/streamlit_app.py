@@ -55,4 +55,4 @@ fig_usdkrw.update_xaxes(title=None)
 fig_usdkrw.update_yaxes(title=None)
 st.plotly_chart(fig_usdkrw, theme="streamlit")
 st.divider()
-
+st.divider()
