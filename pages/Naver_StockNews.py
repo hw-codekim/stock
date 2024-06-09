@@ -9,6 +9,7 @@ from pykrx import stock
 import time
 from datetime import datetime
 
+st.set_page_config(layout="wide")
 # 코드와 네임을 넣으면 naver 종목 기사의 2페이지를 가져와서 보여줌
 def naver_m_news_stock(corp_code,corp_name):
     # col = ['날짜','발행사','제목','내용','링크']
