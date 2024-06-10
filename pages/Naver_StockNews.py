@@ -10,7 +10,103 @@ import time
 from datetime import datetime
 
 st.set_page_config(layout="wide")
-# 코드와 네임을 넣으면 naver 종목 기사의 2페이지를 가져와서 보여줌
+today = datetime.today().strftime('%Y-%m-%d')
+
+st.divider()
+
+sol1,sol2 = st.columns(2)
+with sol1:
+    st.subheader(f'{today} 등락률 평균 15')
+    krx = fdr.StockListing('KRX')
+    krx = krx[['Code', 'Name', 'Market', 'Close','ChagesRatio', 'Open', 'High', 'Low', 'Volume', 'Amount','Marcap']]
+    krx['Amount'] = (krx['Amount']/100000000).round(2)
+    krx['Marcap'] = (krx['Marcap']/100000000).astype(int)
+    krx = krx.sort_values('ChagesRatio',ascending=False)
+    path = './corpInfo.csv'
+    corp = pd.read_csv(path)
+    df = pd.DataFrame(corp,columns=['code','name','sector','big','middle','small'])
+    df = df[['code','name','middle']]
+
+    dd = pd.merge(krx,df,how='left',left_on='Name',right_on='name')
+    dd = dd[dd['Market'] !='KONEX']
+    dd = dd[~dd['Name'].str.endswith('우')]
+    ddf = dd.groupby('middle').agg({'ChagesRatio':['mean','max'],'Amount':'sum'}).reset_index()
+    ddf.columns = pd.MultiIndex.from_tuples(ddf.columns)
+    ddf[('ChagesRatio', 'mean')] = ddf[('ChagesRatio', 'mean')].round(2)
+    ddf = ddf.sort_values(('ChagesRatio','mean'),ascending=False)
+    ddf.columns = ['섹터', '등락률_mean', '등락률_max', '거래대금_sum']
+    ddf['거래대금_sum'] = ddf['거래대금_sum'].round(0)
+    # ddf = ddf.head(15).reset_index().drop(columns='index')
+    
+    # Figure 생성
+    fig = go.Figure()
+
+    #테이블 생성
+    fig.add_trace(go.Table(columnwidth = [300,200],
+        header=dict(values=list(ddf.columns),
+                    fill_color='lightskyblue',
+                    align='center',
+                    font=dict(color='black', size=13),
+                    height=30),
+        cells=dict(values=[ddf.섹터, ddf.등락률_mean, ddf.등락률_max, ddf.거래대금_sum],
+                fill_color='lightcyan',
+                align='center',
+                font=dict(color='black', size=13),
+                height=30)))
+          # 빈 공백을 흰색으로 채움
+    fig.update_layout(width=600)
+    fig.update_layout(height=1500)
+    
+    st.plotly_chart(fig,config={'displayModeBar': False})
+with sol2:
+    st.subheader(f'{today} 반도체 종목')
+    dd = dd.fillna('기타')
+    se = dd[dd['middle'].str.contains('반도체')]
+    se = se[['middle','Name','ChagesRatio','Close','Amount','Marcap']]
+    se.columns = ['섹터','종목','등락률','종가','거래대금','시총']
+    
+    se = se.sort_values(['섹터','등락률'],ascending=False)
+    
+    # 함수를 이용해 값에 따라 색상을 반환하는 함수 정의
+    def get_font_color(value):
+        if value > 0:
+            return 'red'
+        elif value < 0:
+            return 'blue'
+        else:
+            return 'black'
+    # Figure 생성
+    fig = go.Figure()
+    a = [get_font_color(i) for i in se['등락률']] # 수정필요. 안 맞음. 
+    
+    #테이블 생성
+    fig.add_trace(go.Table(columnwidth = [350,250],
+        header=dict(values=list(se.columns),
+                    fill_color='lightskyblue',
+                    align='center',
+                    font=dict(color='black', size=13),
+                    height=30),
+        cells=dict(values=[se.섹터, se.종목, se.등락률, se.종가, se.거래대금, se.시총],
+                fill_color='lightcyan',
+                align='center',
+                font=dict(color=['black','black',a,'black','black','black'], size=13),
+                height=30)))
+          # 빈 공백을 흰색으로 채움
+    fig.update_layout(width=650)
+    fig.update_layout(height=1500)
+    
+    st.plotly_chart(fig,config={'displayModeBar': False})
+
+    # se = df['middle'].unique()
+    # selected = st.selectbox('섹터선택',se,index=None,placeholder='선택')
+    # if selected:
+    #     select_sector = dd[dd['middle'] == selected]
+    #     select_sector = select_sector[['middle','Name','ChagesRatio','Close','Amount','Marcap']]
+    #     select_sector.columns = ['섹터','종목','등락률','종가','거래대금','시총']
+    #     select_sector = select_sector.sort_values('등락률',ascending=False)
+    #     st.table(select_sector)
+
+
 def naver_m_news_stock(corp_code,corp_name):
     # col = ['날짜','발행사','제목','내용','링크']
     col = ['날짜','제목','링크']
