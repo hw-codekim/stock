@@ -2,12 +2,15 @@ import streamlit as st
 import FinanceDataReader as fdr
 import plotly.express as px
 from datetime import datetime
+import pandas as pd
 
 today = datetime.today().strftime('%Y-%m-%d')
 st.subheader('지표 조회')
 df_guri = fdr.DataReader('HG=F') # 구리 선물 (COMEX)
 df_guri = df_guri.reset_index()
-df_guri = df_guri[df_guri['Date'] > '2024-01-01']
+df_guri['Date'] = pd.to_datetime(df_guri['Date']).dt.date
+comparison_date = pd.to_datetime('2024-01-02').date()
+df_guri = df_guri[df_guri['Date'] >= comparison_date]
 today_value = df_guri['Close'].iloc[-1]
 df_guri['Date'] = df_guri['Date'].apply(lambda x : datetime.strftime(x, '%Y-%m-%d')) # Datetime to str
 df_guri = df_guri.dropna()
@@ -32,7 +35,11 @@ st.divider()
 
 df_gas = fdr.DataReader('NG=F') # 천연가스 선물 (NYMEX)
 df_gas = df_gas.reset_index()
-df_gas = df_gas[df_gas['Date'] > '2024-01-01']
+
+df_gas['Date'] = pd.to_datetime(df_gas['Date']).dt.date
+comparison_date = pd.to_datetime('2024-01-02').date()
+df_gas = df_gas[df_gas['Date'] >= comparison_date]
+
 today_value = df_gas['Close'].iloc[-1]
 df_gas['Date'] = df_gas['Date'].apply(lambda x : datetime.strftime(x, '%Y-%m-%d')) # Datetime to str
 df_gas = df_gas.dropna()
@@ -59,7 +66,11 @@ st.divider()
 
 df_us10y = fdr.DataReader('US10YT') # 10년 만기 미국국채 수익률
 df_us10y = df_us10y.reset_index()
-df_us10y = df_us10y[df_us10y['Date'] > '2024-01-01']
+
+df_us10y['Date'] = pd.to_datetime(df_us10y['Date']).dt.date
+comparison_date = pd.to_datetime('2024-01-02').date()
+df_us10y = df_us10y[df_us10y['Date'] >= comparison_date]
+
 today_value = df_us10y['Close'].iloc[-1]
 df_us10y['Date'] = df_us10y['Date'].apply(lambda x : datetime.strftime(x, '%Y-%m-%d')) # Datetime to str
 df_us10y = df_us10y.dropna()
@@ -77,8 +88,6 @@ fig_us10y.update_layout(
             categoryorder='category ascending'))
 
 
-
-
 fig_us10y.update_xaxes(title=None)
 fig_us10y.update_yaxes(title=None)
 st.plotly_chart(fig_us10y, theme="streamlit")
@@ -86,7 +95,11 @@ st.divider()
 
 df_wti = fdr.DataReader('CL=F') # WTI유 선물 Crude Oil (NYMEX)
 df_wti = df_wti.reset_index()
-df_wti = df_wti[df_wti['Date'] > '2024-01-01']
+
+df_wti['Date'] = pd.to_datetime(df_wti['Date']).dt.date
+comparison_date = pd.to_datetime('2024-01-02').date()
+df_wti = df_wti[df_wti['Date'] >= comparison_date]
+
 today_value = df_wti['Close'].iloc[-1]
 df_wti['Date'] = df_wti['Date'].apply(lambda x : datetime.strftime(x, '%Y-%m-%d')) # Datetime to str
 df_wti = df_wti.dropna()
@@ -111,7 +124,12 @@ st.divider()
 
 df_usdkrw = fdr.DataReader('USD/KRW') # 달러 원화
 df_usdkrw = df_usdkrw.reset_index()
-df_usdkrw = df_usdkrw[df_usdkrw['Date'] > '2024-01-01']
+
+df_usdkrw['Date'] = pd.to_datetime(df_usdkrw['Date']).dt.date
+comparison_date = pd.to_datetime('2024-01-02').date()
+df_usdkrw = df_usdkrw[df_usdkrw['Date'] >= comparison_date]
+
+
 today_value = (df_usdkrw['Close'].iloc[-1]).round(2)
 fig_usdkrw = px.line(df_usdkrw, x="Date", y="Close",title=f'【 USD/KRW 환율 】 2024.01.01~ {today}  / {today} = {today_value}')
 fig_usdkrw.update_xaxes(title=None)
