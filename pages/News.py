@@ -13,11 +13,11 @@ def get_search_naver(input_text):
     for i in range(3):
         response = requests.get(f"https://search.naver.com/search.naver?where=news&sm=tab_jum&query={input_text}&start={i}1")
         html = response.text
-        st.write(response.status_code)
+    
         soup = BeautifulSoup(html, 'html.parser')
         articles = soup.select(".list_news > li")
 
-        st.write(articles)
+  
 
         for article in articles:
             title = article.select_one(".news_tit").text
