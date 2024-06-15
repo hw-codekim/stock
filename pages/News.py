@@ -2,10 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 import pandas as pd
-from pytrends.request import TrendReq
-import matplotlib.pyplot as plt
-import urllib
-from GoogleNews import GoogleNews
 from datetime import datetime
 
 st.set_page_config(layout="wide")
