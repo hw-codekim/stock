@@ -15,10 +15,10 @@ def get_search_naver(input_text):
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
         articles = soup.select(".list_news > li")
+        st.write('articles')
         for article in articles:
             title = article.select_one(".news_tit").text
             link = article.select_one(".news_tit").attrs['href']
-            # date_tag = article.select_one(".info_group > .info")
             data.append([title, link])
 
     # 데이터 프레임 만들기
