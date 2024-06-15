@@ -7,6 +7,9 @@ import streamlit as st
 
 today = (datetime.today()-timedelta(days=1)).strftime('%Y/%m/%d')
 st.set_page_config(layout="wide")
+
+
+
 @st.cache_data
 def consensus(code,name):
     url = f'https://comp.fnguide.com/SVO2/json/data/01_06/03_{code}.json'
@@ -65,8 +68,6 @@ datein = st.sidebar.date_input('날짜를 입력하세요', pd.to_datetime(f'{to
 datein = datein.strftime('%Y/%m/%d')
 st.write(f'{datein} 발행한 컨센서스')
 
-
-
 date_result = result [result['일자'] == datein]
 st.write(f'총 {len(date_result)} 건')
 # result = result.sort_values('일자',ascending=False)
@@ -78,3 +79,5 @@ corp_input = st.sidebar.text_input('종목을 입력하세요')
 st.write('좌측 종목 입력')
 corp_result = result[result['name'] == corp_input]
 st.write(corp_result)
+st.write('전체 데이터 로딩 10~15분 소요')
+st.sidebar.button('Reset',on_click=st.cache_data.clear(),use_container_width=True)
