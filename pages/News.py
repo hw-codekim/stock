@@ -16,7 +16,9 @@ def get_search_naver(input_text):
         st.write(response.status_code)
         soup = BeautifulSoup(html, 'html.parser')
         articles = soup.select(".list_news > li")
+
         st.write(articles)
+
         for article in articles:
             title = article.select_one(".news_tit").text
             link = article.select_one(".news_tit").attrs['href']
